@@ -1,85 +1,100 @@
 #include <stdlib.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include "Stack.h"
 
 #define DOUBLE_TRESHOLD 4096
+#define BASIC_TOP_VALUE -1
+#define SIZE_INCREMENT 128
 
-
-typedef struct{
-	int* items;
-	int top;
-	int size;
-} Stack;
-
-void init(Stack* s)
+void init(Stack *s)
 {
-	s->top = -1;
+	s->topElement = BASIC_TOP_VALUE;
 	s->size = 0;
 	s->items = NULL;
 }
 
-void destroy(Stack* s)
+void destroy(Stack *s)
 {
-	if(s->size > 0)
+	if (s->size > 0)
 	{
 		free(s->items);
-		s->top = -1;
+		s->topElement = BASIC_TOP_VALUE;
 		s->size = 0;
 	}
 }
 
-void push(Stack* s, int element)
+void push(Stack *s, int element)
 {
-	s->top += 1;
-	if(s->size == s->top)
+	s->topElement += 1;
+	if (s->size == s->topElement)
 	{
-		int* new_items = NULL;
-		if(s->size == 0)
+		int *newItems = NULL;
+		if (s->size == 0)
 		{
 			s->size += 1;
 		}
-		else if(s->size < DOUBLE_TRESHOLD)
+		else if (s->size < DOUBLE_TRESHOLD)
 		{
 			s->size *= 2;
 		}
 		else
 		{
-			s->size += 128;
+			if (s->size += SIZE_INCREMENT < SIZE_MAX)
+			{
+				s->size += SIZE_INCREMENT;
+			}
+			else
+			{
+				if (s->size + 1 < SIZE_MAX)
+				{
+					s->size += 1;
+				}
+				else
+				{
+					printf("Unable to perform push operation as the size is too big.");
+					destroy(s);
+					exit(EXIT_FAILURE);
+				}
+			}
 		}
-		new_items = realloc(s->items, s->size * sizeof(int));
-        if (new_items == NULL)
-        {
-            printf("Memory allocation failed during push operation.\n");
-            abort();
-        }
-        s->items = new_items;
-    }
-    s->items[s->top] = element;
+		newItems = realloc(s->items, s->size * sizeof(int));
+		if (newItems == NULL)
+		{
+			printf("Memory allocation failed during push operation.\n");
+			destroy(s);
+			exit(EXIT_FAILURE);
+		}
+		s->items = newItems;
+	}
+	s->items[s->topElement] = element;
 }
 
-int pop(Stack* s)
+int pop(Stack *s)
 {
-	if(s->top == -1)
+	if (s->topElement == BASIC_TOP_VALUE)
 	{
 		printf("The stack is empty, unable to perform operation.");
-		abort();
+		destroy(s);
+		exit(EXIT_FAILURE);
 	}
-	s->top -= 1;
-	return s->items[s->top + 1];
+	s->topElement -= 1;
+	return s->items[s->topElement + 1];
 }
 
-int top(Stack* s)
+int top(Stack *s)
 {
-	if(s->top == -1)
+	if(s->topElement == BASIC_TOP_VALUE)
 	{
 		printf("The stack is empty, unable to perform operation.");
-		abort();
+		destroy(s);
+		exit(EXIT_FAILURE);
 	}
-	return s->items[s->top];
+	return s->items[s->topElement];
 }
 
-bool isEmpty(Stack* s)
+bool isEmpty(Stack *s)
 {
-	return (s->top == -1);
+	return (s->topElement == BASIC_TOP_VALUE);
 }
