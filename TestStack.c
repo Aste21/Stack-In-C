@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include "Stack.h"
@@ -11,8 +10,8 @@ int main(int argc, char *argv[])
 	init(&stack);
 	int choice;
 	int input;
-	bool loop_bool = true;
-	while(loop_bool)
+	bool loopBool = true;
+	while(loopBool)
 	{
 		printf("Press 1 to test push\nPress 2 to test pop\nPress 3 to test isEmpty");
 		printf("\nPress 4 to test top\nPress 5 to turn off program\n");
@@ -44,7 +43,7 @@ int main(int argc, char *argv[])
 			}
 			case 5:
 			{
-				loop_bool = false;
+				loopBool = false;
 				break;
 			}
 			default:
